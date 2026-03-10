@@ -23,8 +23,7 @@ namespace EHU.Core.Driver
                 .WithDisabledGpu()
                 .Build();
 
-            // Правильный порядок: сначала service, потом options, потом timeout
-            // Или используем ChromeDriverService явно
+            
             var service = ChromeDriverService.CreateDefaultService();
 
             var driver = new ChromeDriver(service, options, TimeSpan.FromMinutes(5));

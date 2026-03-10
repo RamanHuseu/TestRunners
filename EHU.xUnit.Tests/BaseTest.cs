@@ -6,7 +6,7 @@ namespace EHU.XUnit
     {
         protected TestBase()
         {
-            // Singleton создаёт драйвер
+            
             DriverSingleton.GetDriver();
         }
 

@@ -8,7 +8,7 @@ namespace EHU.NUnit
         [SetUp]
         public void Setup()
         {
-            // Singleton сам создаст драйвер при первом обращении
+            
             DriverSingleton.GetDriver();
         }
 

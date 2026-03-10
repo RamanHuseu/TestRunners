@@ -1,55 +1,33 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using System.Linq;
+﻿using EHU.Core.Pages;
+using NUnit.Framework;
 
-namespace EHU.NUnit.Tests
+namespace EHU.NUnit
 {
     [TestFixture]
-    [Category("Search")]              
-    [Parallelizable(ParallelScope.Self)] 
-    public class SearchTests : BaseTest
+    [Category("Search")]
+    public class SearchTests : TestBase
     {
-        private const string SearchButtonXPath = "//*[@id='masthead']/div[1]/div/div[4]/div";
-        private const string SearchBarXPath = "//*[@id='masthead']/div[1]/div/div[4]/div/form/div/input";
-
-        [Test]
-        public void TestCase2_SearchFunctionality_Default()
+        private static IEnumerable<TestCaseData> SearchTerms()
         {
-            RunSearch("study programs");
-
-            wait.Until(d => d.Url.Contains("?s="));
-            Assert.That(driver.Url, Does.Contain("/?s="),
-                "URL should contain the search query parameter");
-
-            var results = driver.FindElements(By.XPath("//*[@id='page']/div[3]"));
-            Assert.That(results.Count, Is.GreaterThan(0), "Should have search results");
+            yield return new TestCaseData("study programs").SetName("Search_StudyPrograms");
+            yield return new TestCaseData("admission").SetName("Search_Admission");
+            yield return new TestCaseData("contacts").SetName("Search_Contacts");
         }
 
         [Test]
-        [TestCaseSource(typeof(TestData), nameof(TestData.SearchQueries))] 
-        public void TestCase2_SearchFunctionality_Parameterized(string searchTerm)
+        [Category("DataDriven")]
+        [TestCaseSource(nameof(SearchTerms))]
+        public void TestCase2_SearchFunctionality(string searchTerm)
         {
-            RunSearch(searchTerm);
+            var homePage = new HomePage();
+            homePage.Open();
 
-            wait.Until(d => d.Url.Contains("?s="));
-            Assert.That(driver.Url, Does.Contain("/?s="),
-                $"URL should contain search query after searching for '{searchTerm}'");
+            var resultsPage = homePage.Search(searchTerm);
 
-            var results = driver.FindElements(By.XPath("//*[@id='page']/div[3]"));
-            Assert.That(results.Count, Is.GreaterThan(0),
-                $"Should have results for '{searchTerm}'");
-        }
-
-        private void RunSearch(string query)
-        {
-            driver.Navigate().GoToUrl(BaseUrl);
-
-            var searchButton = wait.Until(d => d.FindElement(By.XPath(SearchButtonXPath)));
-            searchButton.Click();
-
-            var searchBar = wait.Until(d => d.FindElement(By.XPath(SearchBarXPath)));
-            searchBar.SendKeys(query);
-            searchBar.SendKeys(Keys.Enter);
+            Assert.That(resultsPage.IsLoaded(), Is.True,
+                $"Search results page should load for term: {searchTerm}");
+            Assert.That(resultsPage.HasResults(), Is.True,
+                $"Should have results for: {searchTerm}");
         }
     }
 }

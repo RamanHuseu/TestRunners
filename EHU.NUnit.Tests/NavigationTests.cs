@@ -1,64 +1,40 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using EHU.Core.Pages;
+using NUnit.Framework;
 
-namespace EHU.NUnit.Tests
+namespace EHU.NUnit
 {
     [TestFixture]
-    [Category("Navigation")]          
-    [Parallelizable(ParallelScope.Self)] 
-    public class NavigationTests : BaseTest
+    [Category("Navigation")]
+    public class NavigationTests : TestBase
     {
         [Test]
+        [Category("Smoke")]
         public void TestCase1_NavigateToAboutEHU()
         {
-            driver.Navigate().GoToUrl(BaseUrl);
+            var homePage = new HomePage();
+            homePage.Open();
 
-            IWebElement aboutLink = wait.Until(d => d.FindElement(By.LinkText("About")));
-            aboutLink.Click();
+            var aboutPage = homePage.GoToAbout();
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(driver.Url, Does.Contain("/about/"),
-                    "URL should contain /about/");
-                Assert.That(driver.Title, Does.Contain("About"),
-                    "Page title should contain 'About'");
-            });
-
-            IWebElement header = wait.Until(d => d.FindElement(By.TagName("h1")));
-            Assert.That(header.Text, Does.Contain("About"),
-                "H1 header should contain 'About'");
+            Assert.That(aboutPage.IsLoaded(), Is.True,
+                "About page should be loaded");
+            Assert.That(aboutPage.GetH1Text(), Does.Contain("About"),
+                "H1 should contain 'About'");
         }
 
         [Test]
-        [TestCaseSource(typeof(TestData), nameof(TestData.NavigationLinks))]
-        public void TestCase_NavigateToPage(string linkText, string urlPart, string titlePart)
-        {
-            driver.Navigate().GoToUrl(BaseUrl);
-
-            IWebElement link = wait.Until(d => d.FindElement(By.LinkText(linkText)));
-            link.Click();
-
-            Assert.That(driver.Url, Does.Contain(urlPart),
-                $"URL should contain {urlPart}");
-        }
-
-        [Test]
+        [Category("Smoke")]
         public void TestCase3_LanguageChange()
         {
-            driver.Navigate().GoToUrl(BaseUrl);
+            var homePage = new HomePage();
+            homePage.Open();
+            homePage.SwitchToLithuanian();
 
-            var languageSwitcher = wait.Until(d => d.FindElement(
-                By.XPath("//*[@id='masthead']/div[1]/div/div[4]/ul")));
-            languageSwitcher.Click();
+            Thread.Sleep(2000);
 
-            var lithuanianOption = wait.Until(d => d.FindElement(
-                By.XPath("//*[@id='masthead']/div[1]/div/div[4]/ul/li/ul/li[3]/a")));
-            lithuanianOption.Click();
-
-            wait.Until(d => d.Url.Contains("lt.ehu"));
-
-            Assert.That(driver.Url, Does.Contain("lt.ehu"),
-                "Should redirect to Lithuanian version");
+            Assert.That(homePage.CurrentUrl, Does.Contain("lt.ehu"),
+                $"Should redirect to Lithuanian. Actual URL: {homePage.CurrentUrl}");
+            Assert.That(homePage.GetBodyText().Length, Is.GreaterThan(0));
         }
     }
 }

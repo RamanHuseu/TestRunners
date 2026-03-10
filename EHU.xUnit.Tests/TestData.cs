@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+﻿using EHU.Core.Pages;
 using Xunit;
 
 namespace EHU.XUnit
@@ -10,17 +10,11 @@ namespace EHU.XUnit
         [Trait("Category", "Smoke")]
         public void TestCase4_VerifyContactInfo()
         {
-            driver.Navigate().GoToUrl("https://en.ehu.lt/contact/");
+            var contactPage = new ContactPage();
+            contactPage.Open();
 
-            var bodyText = wait.Until(d =>
-            {
-                var body = d.FindElement(By.TagName("body"));
-                return body.Text.Length > 0 ? body.Text : null;
-            });
-
-            Assert.Contains("lt.ehu", driver.Url.ToLower().Replace("en.", "").Replace("contact", "lt.ehu") + "lt.ehu");
-            Assert.True(bodyText != null && bodyText.Length > 0);
-            Assert.Contains("contact", driver.Url.ToLower());
+            Assert.True(contactPage.IsLoaded(), "Contact page should be loaded");
+            Assert.True(contactPage.HasContent(), "Contact page should have content");
         }
     }
 }

@@ -1,25 +1,23 @@
-﻿namespace EHU.NUnit.Tests
-{
-    public static class TestData
-    {
-       
-        public static IEnumerable<TestCaseData> SearchQueries()
-        {
-            yield return new TestCaseData("study programs")
-                .SetName("Search_StudyPrograms");
-            yield return new TestCaseData("admission")
-                .SetName("Search_Admission");
-            yield return new TestCaseData("research")
-                .SetName("Search_Research");
-        }
+﻿using EHU.Core.Pages;
+using NUnit.Framework;
 
-       
-        public static IEnumerable<TestCaseData> NavigationLinks()
+namespace EHU.NUnit
+{
+    [TestFixture]
+    [Category("Contact")]
+    public class ContactTests : TestBase
+    {
+        [Test]
+        [Category("Smoke")]
+        public void TestCase4_VerifyContactInfo()
         {
-            yield return new TestCaseData("About", "/about/", "About")
-                .SetName("Nav_About");
-            yield return new TestCaseData("Admissions", "/admissions/", "Admissions")
-                .SetName("Nav_Admissions");
+            var contactPage = new ContactPage();
+            contactPage.Open();
+
+            Assert.That(contactPage.IsLoaded(), Is.True,
+                "Contact page should be loaded");
+            Assert.That(contactPage.HasContent(), Is.True,
+                "Contact page should have content");
         }
     }
 }

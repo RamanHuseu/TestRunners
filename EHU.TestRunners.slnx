@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EHU.NUnit.Tests/EHU.NUnit.Tests.csproj" />
+  <Project Path="EHU.xUnit.Tests/EHU.xUnit.Tests.csproj" />
+</Solution>
